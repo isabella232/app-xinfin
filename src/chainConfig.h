@@ -1,5 +1,5 @@
 #ifndef _CHAIN_CONFIG_H_
-#define _CHAIN_CONFIG_H
+#define _CHAIN_CONFIG_H_
 
 
 #include <stdint.h>

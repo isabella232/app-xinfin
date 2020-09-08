@@ -1,5 +1,5 @@
-#ifndef _UTILS_H_
-#define _UTILS_H_
+#ifndef _XUTILS_H_
+#define _XUTILS_H_
 
 #include <stdint.h>
 
@@ -15,7 +15,7 @@ void getAddressStringFromKey(cx_ecfp_public_key_t *publicKey, uint8_t *out, cx_s
 
 void getAddressStringFromBinary(uint8_t *address, uint8_t *out, cx_sha3_t *sha3Context);
 
-ool adjustDecimals(char *src, uint32_t srcLength, char *target,
+bool adjustDecimals(char *src, uint32_t srcLength, char *target,
                     uint32_t targetLength, uint8_t decimals);
 
 inline int allzeroes(uint8_t *buf, int n) {
