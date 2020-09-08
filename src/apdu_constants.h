@@ -27,7 +27,6 @@
 #define OFFSET_CDATA 5
 
 void handleGetPublicKey(uint8_t p1, uint8_t p2, uint32_t dataBuffer,uint16_t dataLength, unsigned int *flags, unsigned int *tx);
-//void handleProvideErc20TokenInformation(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
 void handleSign(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
 void handleGetAppConfiguration(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
 void handleSignPersonalMessage(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
