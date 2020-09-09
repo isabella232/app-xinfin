@@ -15,8 +15,8 @@ def GetVersion():
         print("Companion App Version : v1.0.0")
         print("App Version : v{}.{}.{}".format(resp[1], resp[2], resp[3]))
     
-    except:
-        print("An exception occured")
+    except Exception as e:
+        print("An exception occured \n", e)
 
 def getPublicKey(index):
 

@@ -1,16 +1,35 @@
+#*******************************************************************************
+#   Ledger App
+#   (c) 2017 Ledger
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#*******************************************************************************
+
 ifeq ($(BOLOS_SDK),)
-$(error BOLOS_SDK is not set)
+$(error Environment variable BOLOS_SDK is not set)
 endif
 include $(BOLOS_SDK)/Makefile.defines
 
-## DEFINES_LIB = USE_LIB_ETHEREUM
+DEFINES_LIB = USE_LIB_ETHEREUM
 APP_LOAD_PARAMS= --curve secp256k1 $(COMMON_LOAD_PARAMS)
+# Allow the app to use path 45 for multi-sig (see BIP45).
+#APP_LOAD_PARAMS += --path "45'"
+# Samsung temporary implementation for wallet ID on 0xda7aba5e/0xc1a551c5
+#APP_LOAD_PARAMS += --path "1517992542'/1101353413'"
 
-DERPATH = "44'/550'"
-
-APPVERSION_M = 1
-APPVERSION_N = 0
-APPVERSION_P = 0
+APPVERSION_M=1
+APPVERSION_N=0
+APPVERSION_P=0
 APPVERSION=$(APPVERSION_M).$(APPVERSION_N).$(APPVERSION_P)
 APP_LOAD_FLAGS= --appFlags 0x240 --dep XinFin:$(APPVERSION)
 
@@ -19,28 +38,27 @@ CHAIN=xinfin
 endif
 
 ifeq ($(CHAIN),xinfin)
-
-APP_LOAD_PARAMS = --path $(DERPATH)
+# Lock the application on its standard path for 1.5. Please complain if non compliant
+APP_LOAD_PARAMS += --path "44'/550'"
 DEFINES += CHAINID_UPCASE=\"XINFIN\" CHAINID_COINNAME=\"XDC\" CHAIN_KIND=CHAIN_KIND_XINFIN CHAIN_ID=50
 APPNAME = "XinFin"
-
-else ifeq ($(CHAIN), apothem)
-
-APP_LOAD_PARAMS = --path $(DERPATH)
-DEFINES += CHAINID_UPCASE=\"XINFIN\" CHAINID_COINNAME=\"XDC\" CHAIN_KIND=CHAIN_KIND_XINFIN CHAIN_ID=51
-APPNAME = "XinFin Apothem"
-
-else
-
-$(error Unsupported Chain)
-
+DEFINES_LIB=
+APP_LOAD_FLAGS=--appFlags 0xa40
 endif
 
 APP_LOAD_PARAMS += $(APP_LOAD_FLAGS) --path "44'/1'"
 DEFINES += $(DEFINES_LIB)
 
-$(info APP_LOAD_PARAMS = $(APP_LOAD_PARAMS))
-$(info DEFINES = $(DEFINES))
+#prepare hsm generation
+ifeq ($(TARGET_NAME),TARGET_BLUE)
+ICONNAME=blue_app_$(CHAIN).gif
+else
+ifeq ($(TARGET_NAME), TARGET_NANOX)
+ICONNAME=nanox_app_$(CHAIN).gif
+else
+ICONNAME=nanos_app_$(CHAIN).gif
+endif
+endif
 
 ################
 # Default rule #
@@ -166,6 +184,3 @@ include $(BOLOS_SDK)/Makefile.rules
 
 #add dependency on custom makefile filename
 dep/%.d: %.c Makefile
-
-listvariants:
-	@echo VARIANTS CHAIN XinFin Apothem
