@@ -251,6 +251,20 @@ unsigned short io_exchange_al(unsigned char channel, unsigned short tx_len) {
     return 0;
 }
 
+tokenDefinition_t* getKnownToken(uint8_t *contractAddress) {
+    tokenDefinition_t *currentToken = NULL;
+    
+    for(size_t i=0; i<MAX_TOKEN; i++){
+      currentToken = &tmpCtx.transactionContext.tokens[i];
+      if (tmpCtx.transactionContext.tokenSet[i] && (os_memcmp(currentToken->address, contractAddress, 20) == 0)) {
+        PRINTF("Token found at index %d\n", i);
+        return currentToken;
+      }
+    }
+
+    return NULL;
+}
+
 void handleApdu(unsigned int *flags, unsigned int *tx) {
   unsigned short sw = 0;
 
@@ -267,9 +281,9 @@ void handleApdu(unsigned int *flags, unsigned int *tx) {
           handleGetPublicKey(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer[OFFSET_CDATA],G_io_apdu_buffer[OFFSET_LC], flags, tx);
           break;
 
-        // case INS_SIGN:
-        //   handleSign(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC], flags, tx);
-        //   break;
+        case INS_SIGN:
+          handleSign(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC], flags, tx);
+          break;
 
         case INS_GET_APP_CONFIGURATION:
           handleGetAppConfiguration(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC], flags, tx);
@@ -279,11 +293,6 @@ void handleApdu(unsigned int *flags, unsigned int *tx) {
           os_memset(tmpCtx.transactionContext.tokenSet, 0, MAX_TOKEN);
           handleSignPersonalMessage(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC], flags, tx);
           break;
-
-        case INS_TEST_SIGN_PERSONAL_MESSAGE:
-            os_memset(tmpCtx.transactionContext.tokenSet, 0, MAX_TOKEN);
-            testHandleSignPersonalMessage(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], flags, tx);
-            break;
 
 #if 0
         case 0xFF: // return to dashboard

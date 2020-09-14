@@ -13,12 +13,13 @@
 #include "XUtils.h"
 #include "uint256.h"
 #include "chainConfig.h"
+#include "tokens.h"
 
 #define MAX_BIP32_PATH 10
 
 #define MAX_TOKEN 2
 
-#define WEI_To_XINFIN 18
+#define WEI_TO_XINFIN 18
 
 #define N_storage (*(volatile internalStorage_t *) PIC(&N_storage_real))
 
@@ -50,7 +51,7 @@ typedef struct transactionContext_t {
     uint8_t pathLength;
     uint32_t bip32Path[MAX_BIP32_PATH];
     uint8_t hash[32];
-    //tokenDefinition_t tokens[MAX_TOKEN];
+    tokenDefinition_t tokens[MAX_TOKEN];
     uint8_t tokenSet[MAX_TOKEN];
     uint8_t currentTokenIndex;
 } transactionContext_t;
