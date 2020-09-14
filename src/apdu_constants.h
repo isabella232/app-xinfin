@@ -8,7 +8,7 @@
 #define INS_SIGN 0x04
 #define INS_GET_APP_CONFIGURATION 0x06
 #define INS_SIGN_PERSONAL_MESSAGE 0x08
-#define INS_PROVIDE_ERC20_TOKEN_INFORMATION 0x0A
+#define INS_TEST_SIGN_PERSONAL_MESSAGE 0x0A
 #define P1_CONFIRM 0x01
 #define P1_NON_CONFIRM 0x00
 #define P2_NO_CHAINCODE 0x00
@@ -30,3 +30,4 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint32_t dataBuffer,uint16_t dat
 void handleSign(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
 void handleGetAppConfiguration(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
 void handleSignPersonalMessage(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx);
+void testHandleSignPersonalMessage(uint8_t p1, uint8_t p2, unsigned int *flags, unsigned int *tx);

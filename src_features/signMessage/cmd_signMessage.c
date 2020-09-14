@@ -11,6 +11,14 @@
 static const char const SIGN_MAGIC[] = "\x19"
                                        "XinFin Signed Message:\n";
 
+void testHandleSignPersonalMessage(uint8_t p1, uint8_t p2, unsigned int *flags, unsigned int *tx){
+
+  uint8_t workbuffer[] = {0x01, 0x0A, 0x02, 0x03};
+  uint16_t dataLength = 4;
+
+  handleSignPersonalMessage(p1, p2, workbuffer, dataLength, flags, tx);
+}
+
 void handleSignPersonalMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx) {
   UNUSED(tx);
   uint8_t hashMessage[32];
