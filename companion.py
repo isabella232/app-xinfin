@@ -76,7 +76,7 @@ def signMessageFunction(message):
     except Exception as e:
         print("An Exception occurred \n", e)
 
-parser = argparse.ArgumentParser(description="Do Something")
+parser = argparse.ArgumentParser(description="Copanion App for Hardware Wallet")
 
 parser.add_argument("--version", help = "Get Version of your app", action="store_true")
 parser.add_argument("--publickey", help = "Get Public Key", action="store")
