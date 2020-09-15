@@ -242,10 +242,11 @@ void finalizeParsing(bool direct) {
     addressSummary[13] = '\0';
     */
 
-    strings.common.fullAddress[0] = '0';
-    strings.common.fullAddress[1] = 'x';
-    os_memmove((unsigned char *)strings.common.fullAddress+2, address, 40);
-    strings.common.fullAddress[42] = '\0';
+    strings.common.fullAddress[0] = 'x';
+    strings.common.fullAddress[1] = 'd';
+    strings.common.fullAddress[2] = 'c';
+    os_memmove((unsigned char *)strings.common.fullAddress+3, address, 40);
+    strings.common.fullAddress[44] = '\0';
   }
   else
   {

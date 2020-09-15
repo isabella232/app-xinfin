@@ -43,7 +43,7 @@ def getPublicKey(index):
             0x00,
             i
         ]))
-
+        
         publicKey2 = "xdc" + resp2[67:107].decode("utf-8")
         if(publicKey1 != publicKey2):
             raise Exception("An error occurred")
@@ -51,10 +51,36 @@ def getPublicKey(index):
     except Exception as e:
         print("An Exception occured \n", e)
 
+def signMessageFunction(message):
+
+    try:
+
+        index = int(input("Enter Index : "))
+        index = index.to_bytes(4, byteorder = "little")
+        message = bytearray(message, "utf-16le")
+        messageLength = (len(message)).to_bytes(4, byteorder = "big") 
+        dataBuffer = index + messageLength + message
+        dataLength = len(dataBuffer)
+
+        resp = dongle.exchange(bytearray([
+            0xE0,
+            0x08,
+            0x00,
+            0x00,
+            dataLength
+        ]) + dataBuffer)
+
+        if(resp):
+            print("Message Signed")
+
+    except Exception as e:
+        print("An Exception occurred \n", e)
+
 parser = argparse.ArgumentParser(description="Do Something")
 
 parser.add_argument("--version", help = "Get Version of your app", action="store_true")
 parser.add_argument("--publickey", help = "Get Public Key", action="store")
+parser.add_argument("--signMessage", help = "Sign a Message", action = "store")
 
 args = parser.parse_args()
 
@@ -63,3 +89,6 @@ if(args.version):
 
 if(args.publickey):
     getPublicKey(args.publickey)
+
+if(args.signMessage):
+    signMessageFunction(args.signMessage)
