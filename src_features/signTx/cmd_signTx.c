@@ -10,7 +10,6 @@
 
 void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx) {
   UNUSED(tx);
-  PRINTF("Inside HandleSign");
   parserStatus_e txResult;
   uint32_t i;
   if (p1 == P1_FIRST) {
@@ -67,7 +66,6 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength
     case USTREAM_PROCESSING:
       THROW(0x9000);
     case USTREAM_FAULT:
-      PRINTF("Errored Here");
       THROW(0x6A80);
     default:
       PRINTF("Unexpected parser status\n");

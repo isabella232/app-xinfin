@@ -233,21 +233,9 @@ void finalizeParsing(bool direct) {
   // Add address
   if (tmpContent.txContent.destinationLength != 0) {
     getAddressStringFromBinary(tmpContent.txContent.destination, address, &sha3);
-    /*
-    addressSummary[0] = '0';
-    addressSummary[1] = 'x';
-    os_memmove((unsigned char *)(addressSummary + 2), address, 4);
-    os_memmove((unsigned char *)(addressSummary + 6), "...", 3);
-    os_memmove((unsigned char *)(addressSummary + 9), address + 40 - 4, 4);
-    addressSummary[13] = '\0';
-    */
+   
     snprintf(strings.common.fullAddress, sizeof(strings.common.fullAddress), "xdc%.*s", 41, address);
     PRINTF("%s", strings.common.fullAddress);
-    // strings.common.fullAddress[0] = 'x';
-    // strings.common.fullAddress[1] = 'd';
-    // strings.common.fullAddress[2] = 'c';
-    // os_memmove((unsigned char *)strings.common.fullAddress+3, address, 40);
-    // strings.common.fullAddress[44] = '\0';
   }
   else
   {
