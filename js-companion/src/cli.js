@@ -134,8 +134,7 @@ async function signTx() {
             {
                 name: 'to',
                 type: 'string',
-                message: "Receipient",
-                default: 'xdc2a40fac3d69370c88b3c9c03df428f23fb3149d9'
+                message: "Receipient"
             },
             {
                 name: 'value',
