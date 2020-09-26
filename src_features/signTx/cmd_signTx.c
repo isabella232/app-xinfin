@@ -10,6 +10,7 @@
 
 void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx) {
   UNUSED(tx);
+  PRINTF("Inside HandleSign");
   parserStatus_e txResult;
   uint32_t i;
   if (p1 == P1_FIRST) {
@@ -21,17 +22,23 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength
       reset_app_context();
     }
     appState = APP_STATE_SIGNING_TX;    
-    tmpCtx.transactionContext.pathLength = 5;
-    
-    tmpCtx.transactionContext.bip32Path[0] = 44 | 0x80000000;
-    tmpCtx.transactionContext.bip32Path[1] = 550 | 0x80000000;
-    tmpCtx.transactionContext.bip32Path[2] = 0;
-    tmpCtx.transactionContext.bip32Path[3] = 0;
-    tmpCtx.transactionContext.bip32Path[4] = workBuffer[0];
-
-    workBuffer += 4;
-    dataLength -= 4;
-    
+    tmpCtx.transactionContext.pathLength = workBuffer[0];
+    if ((tmpCtx.transactionContext.pathLength < 0x01) ||
+        (tmpCtx.transactionContext.pathLength > MAX_BIP32_PATH)) {
+      PRINTF("Invalid path\n");
+      THROW(0x6a80);
+    }
+    workBuffer++;
+    dataLength--;
+    for (i = 0; i < tmpCtx.transactionContext.pathLength; i++) {
+      if (dataLength < 4) {
+        PRINTF("Invalid data\n");
+        THROW(0x6a80);
+      }      
+      tmpCtx.transactionContext.bip32Path[i] = U4BE(workBuffer, 0);
+      workBuffer += 4;
+      dataLength -= 4;
+    }
     dataPresent = false;
     contractProvisioned = CONTRACT_NONE;
     initTx(&txContext, &sha3, &tmpContent.txContent, customProcessor, NULL);
@@ -60,6 +67,7 @@ void handleSign(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength
     case USTREAM_PROCESSING:
       THROW(0x9000);
     case USTREAM_FAULT:
+      PRINTF("Errored Here");
       THROW(0x6A80);
     default:
       PRINTF("Unexpected parser status\n");

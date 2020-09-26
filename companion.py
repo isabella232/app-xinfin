@@ -76,11 +76,19 @@ def signMessageFunction(message):
     except Exception as e:
         print("An Exception occurred \n", e)
 
-parser = argparse.ArgumentParser(description="Copanion App for Hardware Wallet")
+def signTransaction(index):
+
+    receipient = input("Receipient : ")
+    amount = int(input("Amount : "))
+    gasprice = int(input("Gas Price : "))
+    gaslimit = int(input("Gas Limit : "))
+
+parser = argparse.ArgumentParser(description="Companion App for Hardware Wallet")
 
 parser.add_argument("--version", help = "Get Version of your app", action="store_true")
 parser.add_argument("--publickey", help = "Get Public Key", action="store")
 parser.add_argument("--signMessage", help = "Sign a Message", action = "store")
+parser.add_argument("--signTransaction", help = "Sign a Transaction", action = "store")
 
 args = parser.parse_args()
 
@@ -92,3 +100,6 @@ if(args.publickey):
 
 if(args.signMessage):
     signMessageFunction(args.signMessage)
+
+if(args.signTransaction):
+    signTransaction(args.signTransaction)

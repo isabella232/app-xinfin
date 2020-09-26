@@ -278,7 +278,7 @@ void handleApdu(unsigned int *flags, unsigned int *tx) {
       switch (G_io_apdu_buffer[OFFSET_INS]) {
         case INS_GET_PUBLIC_KEY:
           os_memset(tmpCtx.transactionContext.tokenSet, 0, MAX_TOKEN);
-          handleGetPublicKey(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer[OFFSET_CDATA],G_io_apdu_buffer[OFFSET_LC], flags, tx);
+          handleGetPublicKey(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer + OFFSET_CDATA,G_io_apdu_buffer[OFFSET_LC], flags, tx);
           break;
 
         case INS_SIGN:
@@ -292,11 +292,6 @@ void handleApdu(unsigned int *flags, unsigned int *tx) {
         case INS_SIGN_PERSONAL_MESSAGE:
           os_memset(tmpCtx.transactionContext.tokenSet, 0, MAX_TOKEN);
           handleSignPersonalMessage(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2], G_io_apdu_buffer + OFFSET_CDATA, G_io_apdu_buffer[OFFSET_LC], flags, tx);
-          break;
-        
-        case INS_TEST_SIGN_PERSONAL_MESSAGE:
-          os_memset(tmpCtx.transactionContext.tokenSet, 0, MAX_TOKEN);
-          testHandleSignPersonalMessage(G_io_apdu_buffer[OFFSET_P1], G_io_apdu_buffer[OFFSET_P2],flags, tx);
           break;
 
 #if 0

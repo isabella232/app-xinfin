@@ -61,7 +61,7 @@ customStatus_e customProcessor(txContext_t *context) {
         }
         // Sanity check
         // Also handle exception that only need to process the beginning of the data
-        if ((contractProvisioned != CONTRACT_NONE) &&          
+        if ((contractProvisioned != CONTRACT_NONE) &&            
             (context->currentFieldLength > sizeof(dataContext.tokenContext.data))) {
           PRINTF("Data field overflow - dropping customization\n");
           contractProvisioned = CONTRACT_NONE;
@@ -241,12 +241,13 @@ void finalizeParsing(bool direct) {
     os_memmove((unsigned char *)(addressSummary + 9), address + 40 - 4, 4);
     addressSummary[13] = '\0';
     */
-
-    strings.common.fullAddress[0] = 'x';
-    strings.common.fullAddress[1] = 'd';
-    strings.common.fullAddress[2] = 'c';
-    os_memmove((unsigned char *)strings.common.fullAddress+3, address, 40);
-    strings.common.fullAddress[44] = '\0';
+    snprintf(strings.common.fullAddress, sizeof(strings.common.fullAddress), "xdc%.*s", 41, address);
+    PRINTF("%s", strings.common.fullAddress);
+    // strings.common.fullAddress[0] = 'x';
+    // strings.common.fullAddress[1] = 'd';
+    // strings.common.fullAddress[2] = 'c';
+    // os_memmove((unsigned char *)strings.common.fullAddress+3, address, 40);
+    // strings.common.fullAddress[44] = '\0';
   }
   else
   {
@@ -313,8 +314,7 @@ void finalizeParsing(bool direct) {
 #else // NO_CONSENT
 #if defined(TARGET_BLUE)
   ui_approval_transaction_blue_init();
-
-#endif
+#else
 
   if (contractProvisioned == CONTRACT_ALLOWANCE) {
     ux_flow_init(0, ux_approval_allowance_flow, NULL);
@@ -325,5 +325,5 @@ void finalizeParsing(bool direct) {
     ((dataPresent && !N_storage.contractDetails) ? ux_approval_tx_data_warning_flow : ux_approval_tx_flow),
     NULL);
 #endif // #if TARGET_ID
+#endif // NO_CONSENT
 }
-

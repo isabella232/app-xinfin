@@ -9,15 +9,7 @@
 #endif
 
 static const char const SIGN_MAGIC[] = "\x19"
-                                       "XinFin Signed Message:\n";
-
-void testHandleSignPersonalMessage(uint8_t p1, uint8_t p2, unsigned int *flags, unsigned int *tx){
-
-  uint8_t workbuffer[] = {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x03, 0x01, 0x02, 0x02};
-  uint16_t dataLength = 12;
-
-  handleSignPersonalMessage(p1, p2, workbuffer, dataLength, flags, tx);
-}
+                                       "Ethereum Signed Message:\n";
 
 void handleSignPersonalMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx) {
   UNUSED(tx);
@@ -37,19 +29,25 @@ void handleSignPersonalMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint
     }
     appState = APP_STATE_SIGNING_MESSAGE;    
     tmpCtx.messageSigningContext.pathLength = 5;
-
-    tmpCtx.messageSigningContext.bip32Path[0] = 44 | 0x80000000;
-    tmpCtx.messageSigningContext.bip32Path[1] = 550 | 0x80000000;
-    tmpCtx.messageSigningContext.bip32Path[2] = 0;
-    tmpCtx.messageSigningContext.bip32Path[3] = 0;
-    tmpCtx.messageSigningContext.bip32Path[4] = workBuffer[0];
-
-    workBuffer += 4;
-    dataLength -= 4;
-
+    if ((tmpCtx.messageSigningContext.pathLength < 0x01) ||
+        (tmpCtx.messageSigningContext.pathLength > MAX_BIP32_PATH)) {
+        PRINTF("Invalid path\n");
+        THROW(0x6a80);
+    }
+    workBuffer++;
+    dataLength--;
+    for (i = 0; i < tmpCtx.messageSigningContext.pathLength; i++) {
+        if (dataLength < 4) {
+          PRINTF("Invalid data\n");
+          THROW(0x6a80);
+        }
+        tmpCtx.messageSigningContext.bip32Path[i] = U4BE(workBuffer, 0);
+        workBuffer += 4;
+        dataLength -= 4;
+    }
     if (dataLength < 4) {
       PRINTF("Invalid data\n");
-      THROW(0x6a802);
+      THROW(0x6a80);
     }    
     tmpCtx.messageSigningContext.remainingLength = U4BE(workBuffer, 0);
     workBuffer += 4;
@@ -78,7 +76,7 @@ void handleSignPersonalMessage(uint8_t p1, uint8_t p2, uint8_t *workBuffer, uint
     THROW(0x6985);
   }
   if (dataLength > tmpCtx.messageSigningContext.remainingLength) {
-      THROW(0x6A81);
+      THROW(0x6A80);
   }
   cx_hash((cx_hash_t *)&sha3, 0, workBuffer, dataLength, NULL, 0);
   cx_hash((cx_hash_t *)&tmpContent.sha2, 0, workBuffer, dataLength, NULL, 0);

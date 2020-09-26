@@ -8,12 +8,12 @@
 #endif
 #include "feature_getPublicKey.h"
 
-void handleGetPublicKey(uint8_t p1, uint8_t p2, uint32_t dataBuffer,uint16_t dataLength, unsigned int *flags, unsigned int *tx) {
+void handleGetPublicKey(uint8_t p1, uint8_t p2, uint8_t *dataBuffer, uint16_t dataLength, unsigned int *flags, unsigned int *tx) {
   UNUSED(dataLength);
   uint8_t privateKeyData[32];
   uint32_t bip32Path[MAX_BIP32_PATH];
   uint32_t i;
-  uint8_t bip32PathLength = 5;
+  uint8_t bip32PathLength = *(dataBuffer++);
   cx_ecfp_private_key_t privateKey;
   reset_app_context();
   if ((bip32PathLength < 0x01) ||
@@ -27,20 +27,13 @@ void handleGetPublicKey(uint8_t p1, uint8_t p2, uint32_t dataBuffer,uint16_t dat
   if ((p2 != P2_CHAINCODE) && (p2 != P2_NO_CHAINCODE)) {
     THROW(0x6B00);
   }
-  // for (i = 0; i < bip32PathLength; i++) {
-  //   bip32Path[i] = U4BE(dataBuffer, 0);
-  //   dataBuffer += 4;
-  // }
-
-  bip32Path[0] = 44 | 0x80000000;
-  bip32Path[1] = 550 | 0x80000000;
-  bip32Path[2] = 0;
-  bip32Path[3] = 0;
-  bip32Path[4] = dataBuffer;
-
+  for (i = 0; i < bip32PathLength; i++) {
+    bip32Path[i] = U4BE(dataBuffer, 0);
+    dataBuffer += 4;
+  }
   tmpCtx.publicKeyContext.getChaincode = (p2 == P2_CHAINCODE);
   io_seproxyhal_io_heartbeat();
-  os_perso_derive_node_bip32(CX_CURVE_256K1, bip32Path, 5, privateKeyData, (tmpCtx.publicKeyContext.getChaincode ? tmpCtx.publicKeyContext.chainCode : NULL));
+  os_perso_derive_node_bip32(CX_CURVE_256K1, bip32Path, bip32PathLength, privateKeyData, (tmpCtx.publicKeyContext.getChaincode ? tmpCtx.publicKeyContext.chainCode : NULL));
   cx_ecfp_init_private_key(CX_CURVE_256K1, privateKeyData, 32, &privateKey);
   io_seproxyhal_io_heartbeat();
   cx_ecfp_generate_pair(CX_CURVE_256K1, &tmpCtx.publicKeyContext.publicKey, &privateKey, 1);
