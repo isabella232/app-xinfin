@@ -4,6 +4,7 @@ import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import Eth from "@ledgerhq/hw-app-eth";
 import Web3 from 'web3';
 import {encode} from 'rlp';
+import {sha256} from 'js-sha256';
 
 const web3 = new Web3("https://rpc.apothem.network");
 
@@ -66,7 +67,7 @@ async function getVersion() {
         let transport = await TransportNodeHid.open("");
         let eth = new Eth(transport);
         let result = await eth.getAppConfiguration();
-        console.log(result)
+        console.log("BOLOS App Version : ", result.version)
     }
     catch (error) {
         console.log(error)
@@ -91,6 +92,8 @@ async function signMessage() {
             }
         ];
         const answers = await inquirer.prompt(questions);
+        var hash = sha256(answers.message);
+        console.log("Message Hash : ", hash)
         let transport = await TransportNodeHid.open("");
 
         const eth = new Eth(transport)
@@ -102,7 +105,7 @@ async function signMessage() {
         if(v.length < 2){
             v = "0" + v;
         }
-        console.log("Sinature : 0x" + result['r'] + result['v'] + v)
+        console.log("Signature : 0x" + result['r'] + result['v'] + v)
     }
     catch (error) {
         console.log(error);
@@ -135,13 +138,13 @@ async function signTx() {
                 name: 'to',
                 type: 'string',
                 message: "Receipient",
-                default: 'xdc2a40fac3d69370c88b3c9c03df428f23fb3149d9'
+                default: 'xdcdc2c4b448b87d6755174096306cd47c47cc552f2'
             },
             {
                 name: 'value',
                 type: 'string',
-                message: 'Amount(ETH) : ',
-                default: 0
+                message: 'Amount(XDC) : ',
+                default: 1
             },
         ];
 
@@ -156,7 +159,6 @@ async function signTx() {
         let response = await eth.getAddress(`44'/550'/0/0/${txObject.index}`, 0, 1);
         let address = response.address;
         let nonce = await web3.eth.getTransactionCount(address)
-        console.log(nonce)
         let chainId = await web3.eth.getChainId();
 
         if(nonce === 0){
@@ -174,6 +176,7 @@ async function signTx() {
         tx.push(encode(null).slice(1))
 
         let tx1 = encode(tx)
+        console.log("Review and Confirm Transaction in Ledger Device")
         let result = await eth.signTransaction(`44'/550'/0/0/${txObject.index}`, tx1)
 
         tx[6] = Buffer.from(result.v, "hex");
@@ -183,10 +186,15 @@ async function signTx() {
         tx1 = encode(tx);
         let raw = "0x" + tx1.toString("hex");
 
+        console.log("Transaction Confirmed, Broadcasting Transaction")
+
         const txHash = await web3.eth.sendSignedTransaction(raw);
         console.log(txHash)
     }
     catch (error) {
+        if(error.statusCode === 27013)
+        console.log("Transaction Rejected")
+        else
         console.log(error)
     }
 }
