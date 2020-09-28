@@ -144,7 +144,7 @@ async function signTx() {
                 name: 'value',
                 type: 'string',
                 message: 'Amount(XDC) : ',
-                default: 1
+                default: "1"
             },
         ];
 

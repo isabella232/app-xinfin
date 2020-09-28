@@ -1,9 +1,10 @@
 {
-  "name": "js-companion",
+  "name": "@xinfin/js-companion",
   "version": "1.0.0",
   "description": "A CLI Application",
   "main": "index.js",
   "bin": {
+    "@xinfin/js-companion": "bin/js-copmanion",
     "js-companion": "bin/js-companion"
   },
   "publishConfig": {
