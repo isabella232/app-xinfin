@@ -1,10 +1,9 @@
 {
-  "name": "@samarthbhadane/js-companion",
+  "name": "js-companion",
   "version": "1.0.0",
   "description": "A CLI Application",
   "main": "index.js",
   "bin": {
-    "@samarthbhadane/js-companion": "bin/js-copanion",
     "js-companion": "bin/js-companion"
   },
   "publishConfig": {
