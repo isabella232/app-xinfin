@@ -64,7 +64,7 @@ else
 ifeq ($(TARGET_NAME), TARGET_NANOX)
 ICONNAME=nanox_app_$(CHAIN).gif
 else
-ICONNAME=nanos_app_$(CHAIN).gif
+ICONNAME=nanos_app_xdc.gif
 endif
 endif
 
